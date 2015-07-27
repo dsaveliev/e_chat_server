@@ -1,0 +1,5 @@
+/_rel/*
+/ebin/*
+/deps/*
+.erlang.mk/*
+api.txt
