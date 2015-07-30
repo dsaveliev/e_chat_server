@@ -32,15 +32,22 @@ handle_call(stop, _From, State) ->
 handle_call(_Request, _From, State) ->
     {reply, ignored, State}.
 
-handle_cast({forward_message, Message}, State) ->
+handle_cast({forward_message, Message, FromSocketPid}, State = #state{sockets = SocketPids}) ->
     erlang:display(Message),
+    erlang:display(FromSocketPid),
+    %TODO: Сохранять Message в базе
+    % Время в ISO 8601
+    % Доработать формат сообщений {"message":"bla bla bla","send_at":"2012-04-23T18:25:43.511Z","user":{"id": 1,"login":"Василий"}}
+    forward_message(Message, FromSocketPid, SocketPids),
     {noreply, State};
-handle_cast({add_socket, SocketPid}, State) ->
+handle_cast({add_socket, SocketPid}, State = #state{sockets = SocketPids}) ->
     erlang:display(SocketPid),
-    {noreply, State};
-handle_cast({delete_socket, SocketPid}, State) ->
+    UpdatedSocketPids = add_socket(SocketPid, SocketPids),
+    {noreply, State#state{sockets = UpdatedSocketPids}};
+handle_cast({delete_socket, SocketPid}, State = #state{sockets = SocketPids}) ->
     erlang:display(SocketPid),
-    {noreply, State};
+    UpdatedSocketPids = delete_socket(SocketPid, SocketPids),
+    {noreply, State#state{sockets = UpdatedSocketPids}};
 handle_cast(_Msg, State) ->
     {noreply, State}.
 
@@ -52,3 +59,20 @@ terminate(_Reason, _State) ->
 
 code_change(_OldVsn, State, _Extra) ->
     {ok, State}.
+
+%%%% Private function
+
+add_socket(SocketPid, SocketPids) ->
+    case [Pid || Pid <- SocketPids, SocketPid =:= Pid] of
+        [_] -> SocketPids;
+        [] -> [SocketPid | SocketPids]
+    end.
+
+delete_socket(SocketPid, SocketPids) ->
+    case [Pid || Pid <- SocketPids, SocketPid =:= Pid] of
+        [_] -> [Pid || Pid <- SocketPids, SocketPid =/= Pid];
+        [] -> SocketPids
+    end.
+
+forward_message(Message, FromSocketPid, SocketPids) ->
+    [Pid ! {send_message, Message} || Pid <- SocketPids, Pid =/= FromSocketPid].

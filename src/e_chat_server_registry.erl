@@ -31,7 +31,7 @@ handle_call(_Request, _From, State) ->
 handle_cast({user_connected, RoomId, UserId, SocketPid}, State = #state{room_pids = RoomPids}) ->
     case is_authorized(RoomId, UserId) of
       true ->
-        {UpdatedRoomPids, RoomPid} = register_room(RoomId, RoomPids, UserId),
+        {UpdatedRoomPids, RoomPid} = add_room(RoomId, RoomPids, UserId),
         bind_room_with_socket(RoomPid, SocketPid),
         {noreply, State#state{room_pids = UpdatedRoomPids}};
       false ->
@@ -69,7 +69,7 @@ is_authorized(RoomId, UserId) ->
       _ -> true
     end.
 
-register_room(RoomId, RoomPids, UserId) ->
+add_room(RoomId, RoomPids, UserId) ->
     case [Pid || {room, Id, Pid} <- RoomPids, Id =:= RoomId] of
         [RoomPid] ->
             {RoomPids, RoomPid};

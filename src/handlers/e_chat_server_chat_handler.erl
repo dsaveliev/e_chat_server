@@ -32,7 +32,7 @@ websocket_init(_, Req, _Opts) ->
 
 websocket_handle({text, Data}, Req, State = #state{room_pid = RoomPid}) ->
     Message = fetch_message(Data),
-    gen_server:cast(RoomPid, {forward_message, Message}),
+    gen_server:cast(RoomPid, {forward_message, Message, self()}),
     {reply, {text, Data}, Req, State};
 websocket_handle({binary, Data}, Req, State) ->
     {reply, {binary, Data}, Req, State};
