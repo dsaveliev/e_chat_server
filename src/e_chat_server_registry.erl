@@ -28,22 +28,25 @@ init([]) ->
 handle_call(_Request, _From, State) ->
     {reply, ignored, State}.
 
-handle_cast({user_connected, RoomId, UserId}, State = #state{room_pids = RoomPids}) ->
+handle_cast({user_connected, RoomId, UserId, SocketPid}, State = #state{room_pids = RoomPids}) ->
     case is_authorized(RoomId, UserId) of
       true ->
-        UpdatedRoomPids = register_room(RoomId, RoomPids, UserId),
+        {UpdatedRoomPids, RoomPid} = register_room(RoomId, RoomPids, UserId),
+        bind_room_with_socket(RoomPid, SocketPid),
         {noreply, State#state{room_pids = UpdatedRoomPids}};
       false ->
         {noreply, State}
     end;
-handle_cast({user_disconnected, RoomId, UserId}, State = #state{room_pids = RoomPids}) ->
+handle_cast({user_disconnected, RoomId, UserId, SocketPid, RoomPid}, State) ->
     case is_authorized(RoomId, UserId) of
-      true ->
-        UpdatedRoomPids = delete_room(RoomId, RoomPids),
-        {noreply, State#state{room_pids = UpdatedRoomPids}};
-      false ->
-        {noreply, State}
-    end;
+      true -> unbind_room_with_socket(RoomPid, SocketPid)
+    end,
+    {noreply, State};
+handle_cast({delete_room, RoomId}, State = #state{room_pids = RoomPids}) ->
+    %TODO: Удалять комнату из registry только если в ней больше нет сокетов
+    % Вызывать метод из e_chat_server_room
+    UpdatedRoomPids = delete_room(RoomId, RoomPids),
+    {noreply, State#state{room_pids = UpdatedRoomPids}};
 handle_cast(_Msg, State) ->
     {noreply, State}.
 
@@ -68,11 +71,11 @@ is_authorized(RoomId, UserId) ->
 
 register_room(RoomId, RoomPids, UserId) ->
     case [Pid || {room, Id, Pid} <- RoomPids, Id =:= RoomId] of
-        [_] ->
-            RoomPids;
+        [RoomPid] ->
+            {RoomPids, RoomPid};
         [] ->
-            {ok, Pid} = supervisor:start_child(e_chat_server_room_sup, [RoomId, UserId]),
-            [{room, RoomId, Pid} | RoomPids]
+            {ok, RoomPid} = supervisor:start_child(e_chat_server_room_sup, [RoomId, UserId]),
+            {[{room, RoomId, RoomPid} | RoomPids], RoomPid}
     end.
 
 delete_room(RoomId, RoomPids) ->
@@ -83,3 +86,10 @@ delete_room(RoomId, RoomPids) ->
         [] ->
             RoomPids
     end.
+
+bind_room_with_socket(RoomPid, SocketPid) ->
+    gen_server:cast(RoomPid, {add_socket, SocketPid}),
+    SocketPid ! {add_room, RoomPid}.
+
+unbind_room_with_socket(RoomPid, SocketPid) ->
+    gen_server:cast(RoomPid, {delete_socket, SocketPid}).

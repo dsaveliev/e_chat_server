@@ -32,6 +32,15 @@ handle_call(stop, _From, State) ->
 handle_call(_Request, _From, State) ->
     {reply, ignored, State}.
 
+handle_cast({forward_message, Message}, State) ->
+    erlang:display(Message),
+    {noreply, State};
+handle_cast({add_socket, SocketPid}, State) ->
+    erlang:display(SocketPid),
+    {noreply, State};
+handle_cast({delete_socket, SocketPid}, State) ->
+    erlang:display(SocketPid),
+    {noreply, State};
 handle_cast(_Msg, State) ->
     {noreply, State}.
 
