@@ -13,39 +13,35 @@
 -export([code_change/3]).
 
 -record(state, {
+    user_id,
+    room_id,
     sockets = []
 }).
 
 %% API.
 
 -spec start_link(integer(), integer()) -> {ok, pid()}.
-start_link(_RoomId, _UserId) ->
-    gen_server:start_link({local, ?MODULE}, ?MODULE, [], []).
+start_link(RoomId, UserId) ->
+    gen_server:start_link({local, ?MODULE}, ?MODULE, [RoomId, UserId], []).
 
 %% gen_server.
 
-init([]) ->
-    {ok, #state{}}.
+init([RoomId, UserId]) ->
+    {ok, #state{room_id = RoomId, user_id = UserId}}.
 
 handle_call(stop, _From, State) ->
     {stop, normal, shutdown_ok, State};
 handle_call(_Request, _From, State) ->
     {reply, ignored, State}.
 
-handle_cast({forward_message, Message, FromSocketPid}, State = #state{sockets = SocketPids}) ->
-    erlang:display(Message),
-    erlang:display(FromSocketPid),
-    %TODO: Сохранять Message в базе
-    % Время в ISO 8601
-    % Доработать формат сообщений {"message":"bla bla bla","send_at":"2012-04-23T18:25:43.511Z","user":{"id": 1,"login":"Василий"}}
+handle_cast({forward_message, Text, FromSocketPid}, State = #state{user_id = UserId, room_id = RoomId, sockets = SocketPids}) ->
+    Message = e_chat_server_message_model:create([{user_id, UserId}, {room_id, RoomId}, {text, Text}]),
     forward_message(Message, FromSocketPid, SocketPids),
     {noreply, State};
 handle_cast({add_socket, SocketPid}, State = #state{sockets = SocketPids}) ->
-    erlang:display(SocketPid),
     UpdatedSocketPids = add_socket(SocketPid, SocketPids),
     {noreply, State#state{sockets = UpdatedSocketPids}};
 handle_cast({delete_socket, SocketPid}, State = #state{sockets = SocketPids}) ->
-    erlang:display(SocketPid),
     UpdatedSocketPids = delete_socket(SocketPid, SocketPids),
     {noreply, State#state{sockets = UpdatedSocketPids}};
 handle_cast(_Msg, State) ->

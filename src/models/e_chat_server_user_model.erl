@@ -5,6 +5,7 @@
 -export([find_all/1]).
 -export([find_by_room/1]).
 -export([is_exists/1]).
+-export([render/1]).
 
 -include("../e_chat_server_models.hrl").
 
@@ -48,6 +49,9 @@ is_exists(Data) ->
         undefined -> false;
         _ -> true
     end.
+
+render(User) ->
+    [{<<"id">>, User#user.id}, {<<"login">>, User#user.login}].
 
 %%%% Private functions
 find_with_template(Template, Values) ->

@@ -43,7 +43,18 @@ content_types_accepted(Req, State) ->
 
 %%%% Custom callbacks
 to_json(Req, State = #state{current_user = CurrentUser}) ->
-    Response = e_chat_server_index_rooms_service:perform(CurrentUser),
+    {RoomId, _} = cowboy_req:binding(id, Req, undefined),
+    Response = case RoomId of
+        undefined ->
+            e_chat_server_index_rooms_service:perform(CurrentUser);
+        _ ->
+            case e_chat_server_search_room_service:perform(RoomId, CurrentUser) of
+                {Room, Users} ->
+                    e_chat_server_room_model:render(Room, Users);
+                undefined ->
+                    [{<<"error">>, [{<<"code">>, <<"room_not_found">>}]}]
+            end
+    end,
     {jsx:encode(Response), Req, State}.
 
 perform(Req, State = #state{current_user = CurrentUser}) ->

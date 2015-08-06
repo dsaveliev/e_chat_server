@@ -15,6 +15,4 @@ build_response(Rooms) ->
 
 build_room(Room) ->
     Users = e_chat_server_user_model:find_by_room(Room),
-    [{<<"id">>, Room#room.id},
-     {<<"users">>, [[{<<"id">>, User#user.id},
-                     {<<"login">>, User#user.login}] || User <- Users]}].
+    e_chat_server_room_model:render(Room, Users).

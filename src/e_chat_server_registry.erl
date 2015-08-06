@@ -42,11 +42,11 @@ handle_cast({user_disconnected, RoomId, UserId, SocketPid, RoomPid}, State) ->
       true -> unbind_room_with_socket(RoomPid, SocketPid)
     end,
     {noreply, State};
-handle_cast({delete_room, RoomId}, State = #state{room_pids = RoomPids}) ->
-    %TODO: Удалять комнату из registry только если в ней больше нет сокетов
-    % Вызывать метод из e_chat_server_room
-    UpdatedRoomPids = delete_room(RoomId, RoomPids),
-    {noreply, State#state{room_pids = UpdatedRoomPids}};
+%TODO: Удалять комнату из registry только если в ней больше нет сокетов и она долгое время неактивна
+% На первой итерации оставим пустые комнаты активными.
+% handle_cast({delete_room, RoomId}, State = #state{room_pids = RoomPids}) ->
+%     UpdatedRoomPids = delete_room(RoomId, RoomPids),
+%     {noreply, State#state{room_pids = UpdatedRoomPids}};
 handle_cast(_Msg, State) ->
     {noreply, State}.
 
@@ -78,14 +78,14 @@ add_room(RoomId, RoomPids, UserId) ->
             {[{room, RoomId, RoomPid} | RoomPids], RoomPid}
     end.
 
-delete_room(RoomId, RoomPids) ->
-    case [Pid || {room, Id, Pid} <- RoomPids, Id =:= RoomId] of
-        [RoomPid] ->
-            gen_server:call(RoomPid, stop),
-            [Pid || {room, Id, Pid} <- RoomPids, Id =/= RoomId];
-        [] ->
-            RoomPids
-    end.
+% delete_room(RoomId, RoomPids) ->
+%     case [Pid || {room, Id, Pid} <- RoomPids, Id =:= RoomId] of
+%         [RoomPid] ->
+%             gen_server:call(RoomPid, stop),
+%             [Pid || {room, Id, Pid} <- RoomPids, Id =/= RoomId];
+%         [] ->
+%             RoomPids
+%     end.
 
 bind_room_with_socket(RoomPid, SocketPid) ->
     gen_server:cast(RoomPid, {add_socket, SocketPid}),
