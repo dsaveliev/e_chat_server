@@ -4,6 +4,7 @@
 -export([find/1]).
 -export([find_all/1]).
 -export([is_exists/1]).
+-export([render/2]).
 
 -include("../e_chat_server_models.hrl").
 
@@ -22,10 +23,12 @@ find(Data) ->
 
 find_all(Data) ->
     case Data of
-        [{id, Id}] ->
+        [{id, RawId}] ->
+            Id = e_chat_server_common:normalize_id(RawId),
             Template = "SELECT * FROM rooms WHERE id = '~w' ORDER BY created_at",
             find_with_template(Template, [Id]);
-        [{owner_id, OwnerId}] ->
+        [{owner_id, RawOwnerId}] ->
+            OwnerId = e_chat_server_common:normalize_id(RawOwnerId),
             Template = "SELECT * FROM rooms WHERE owner_id = '~w' ORDER BY created_at",
             find_with_template(Template, [OwnerId]);
         [Users] ->
@@ -42,6 +45,10 @@ is_exists(Data) ->
         undefined -> false;
         _ -> true
     end.
+
+render(Room, Users) ->
+    [{<<"id">>, Room#room.id},
+     {<<"users">>, [e_chat_server_user_model:render(User) || User <- Users]}].
 
 %%%% Private functions
 find_with_template(Template, Values) ->

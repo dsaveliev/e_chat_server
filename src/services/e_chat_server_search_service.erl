@@ -15,4 +15,4 @@ perform(Query) ->
 %%%% Private functions
 find_users(Query) ->
     Users = e_chat_server_user_model:find_all([{q, Query}]),
-    [[{<<"id">>, User#user.id}, {<<"login">>, User#user.login}] || User <- Users].
+    [e_chat_server_user_model:render(User) || User <- Users].

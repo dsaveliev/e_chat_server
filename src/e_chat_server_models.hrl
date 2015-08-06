@@ -22,3 +22,12 @@
     user_id,
     room_id
 }).
+
+-record(message, {
+    id,
+    room_id,
+    user_id,
+    text,
+    state,
+    created_at
+}).

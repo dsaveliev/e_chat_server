@@ -18,9 +18,7 @@ perform(CurrentUser, Users) ->
 
 %% Private functions
 build_response(Room, Users) ->
-    [{<<"id">>, Room#room.id},
-     {<<"users">>, [[{<<"id">>, User#user.id},
-                     {<<"login">>, User#user.login}] || User <- Users]}].
+     e_chat_server_room_model:render(Room, Users).
 
 bind_users(Room, Users) ->
     [e_chat_server_user_room_model:create([{user_id, User#user.id},
