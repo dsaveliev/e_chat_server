@@ -46,6 +46,7 @@ content_types_accepted(Req, State) ->
 %%%% Custom callbacks
 to_json(Req, State = #state{current_user = CurrentUser}) ->
     {RoomId, _} = cowboy_req:binding(id, Req, <<"0">>),
+    %TODO: Проверка наличия комнаты.
     Response = e_chat_server_search_messages_service:perform(RoomId, CurrentUser),
     {jsx:encode(Response), Req, State}.
 
