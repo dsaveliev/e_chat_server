@@ -5,12 +5,11 @@
 -include("../e_chat_server_models.hrl").
 
 perform(Login, Password) ->
-    case e_chat_server_user_model:is_exists([{login, Login}]) of
-        true ->
-            User = e_chat_server_user_model:find([{login, Login}]),
-            check_credentials(User, Password);
-        false ->
-            user_not_found
+    case e_chat_server_user_model:find([{login, Login}]) of
+        undefined ->
+            user_not_found;
+        User ->
+            check_credentials(User, Password)
     end.
 
 %%%% Private functions
