@@ -20,7 +20,8 @@
                     {host, "localhost"},
                     {database, "chat"},
                     {port, 5432},
-                    {username, "postgres"}
+                    {username, "username"},
+                    {password, "password"}
                 ]}
             ]}
     ]}

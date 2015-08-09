@@ -1,0 +1,9 @@
+certs:
+  ca:
+    password: ""
+
+ssh:
+  users:
+    - user: "root"
+      password: ""
+      key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC0fqAWZAF9n601kTycPiAinx5mLMgVFlX2ai1F3Oa7W4X0mXZ7kCLYiS7df7OlJYE0GsCa45brsh5yr+0rIQJcS/ImdCnJOvDgLwGuiITsgFbaE5lp01VgRQEwGm1pCIaipPIlO2uxW2GStusKUj+DBojd/aqD5dL9KvezvSlVTYKeQpe/u4cZcGUePY6dFEQCIuOD9GApXXt5eiLSUkGhSlCDNWqtgb7pWPgZbMMPrIQlXQ6ZgP5kMYi87yj4+5BRXb+cA8RUzK6WICnQaX6qcPHSB/PhDxvMfjRN2Dg+sGsoomZ1pXOWKTfx55Jlb1XCDixO5Aaps7NbobGPljM/ dsavelev@fun-box.ru"
