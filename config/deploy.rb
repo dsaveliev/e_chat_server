@@ -2,7 +2,7 @@
 lock '3.4.0'
 
 set :application, 'e_chat_server'
-set :repo_url, 'git@bitbucket.org:saveliev/e_chat_server.git'
+set :repo_url, 'git@github.com:dsaveliev/e_chat_server.git'
 
 set :deploy_to, '/srv/e_chat_server'
 set :user, 'root'
