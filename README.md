@@ -22,6 +22,7 @@ HTTP 422 Unprocessable Entity
 ### Выход
 ```
 POST /v1/logout
+X-Session-Id: abb8fe30-a3e7-4eee-8afd-f3c2f046f6f0
 {}
 
 HTTP 200 OK
@@ -47,6 +48,7 @@ HTTP 422 Unprocessable Entity
 ### Информация об аккаунте
 ```
 GET /v1/info
+X-Session-Id: abb8fe30-a3e7-4eee-8afd-f3c2f046f6f0
 
 HTTP 200 OK
 {"id":1,"login":"Василий"}
@@ -57,6 +59,7 @@ HTTP 401 Unauthorized
 ### Поиск пользователей
 ```
 GET /v1/users/?q=Вася
+X-Session-Id: abb8fe30-a3e7-4eee-8afd-f3c2f046f6f0
 
 HTTP 200 OK
 [
@@ -69,6 +72,7 @@ HTTP 401 Unauthorized
 ### Список доступных комнат
 ```
 GET /v1/rooms
+X-Session-Id: abb8fe30-a3e7-4eee-8afd-f3c2f046f6f0
 
 HTTP 200 OK
 [
@@ -81,6 +85,7 @@ HTTP 401 Unauthorized
 ### Создание комнаты
 ```
 POST /v1/rooms
+X-Session-Id: abb8fe30-a3e7-4eee-8afd-f3c2f046f6f0
 {"users":[{"id":2,"login":"Петр"}]}
 
 HTTP 200 OK
@@ -95,6 +100,7 @@ HTTP 401 Unauthorized
 ### Информация о комнате
 ```
 GET /v1/rooms/10
+X-Session-Id: abb8fe30-a3e7-4eee-8afd-f3c2f046f6f0
 
 HTTP 200 OK
 {"id":10,"users":[{"id":2,"login":"Петр"},{"id":1,"login":"Василий"}]}
@@ -108,6 +114,7 @@ HTTP 401 Unauthorized
 ### История сообщений
 ```
 GET /v1/rooms/10/messages
+X-Session-Id: abb8fe30-a3e7-4eee-8afd-f3c2f046f6f0
 
 HTTP 200 OK
 [
@@ -120,7 +127,7 @@ HTTP 401 Unauthorized
 ```
 ### Работа с веб сокетом
 ```
-WS /v1/rooms/10/chat
+WS /v1/rooms/10/chat?session_id=abb8fe30-a3e7-4eee-8afd-f3c2f046f6f0
 ```
 ##### Отправка
 ```
