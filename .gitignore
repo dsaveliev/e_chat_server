@@ -1,5 +1,7 @@
 /_rel/*
 /ebin/*
 /deps/*
+/deploy/static/*
+/deploy/logs/*
 .erlang.mk/*
 api.txt

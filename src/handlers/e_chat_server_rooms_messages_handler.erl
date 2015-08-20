@@ -38,14 +38,15 @@ is_authorized(Req, State) ->
     end.
 
 content_types_provided(Req, State) ->
-    {[{<<"application/json">>, to_json}], Req, State}.
+    {[{<<"application/json">>, to_json}, {<<"application/json; charset=utf-8">>, to_json}], Req, State}.
 
 content_types_accepted(Req, State) ->
-    {[{<<"application/json">>, perform}], Req, State}.
+    {[{<<"application/json">>, perform}, {<<"application/json; charset=utf-8">>, perform}], Req, State}.
 
 %%%% Custom callbacks
 to_json(Req, State = #state{current_user = CurrentUser}) ->
     {RoomId, _} = cowboy_req:binding(id, Req, <<"0">>),
+    %TODO: Проверка наличия комнаты.
     Response = e_chat_server_search_messages_service:perform(RoomId, CurrentUser),
     {jsx:encode(Response), Req, State}.
 

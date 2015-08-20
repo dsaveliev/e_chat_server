@@ -1,0 +1,17 @@
+---
+- hosts: droplets
+  tasks:
+    - name: Install Sudo
+      apt: pkg=sudo state=installed update_cache=true
+    - name: Install Git
+      apt: pkg=git state=installed update_cache=true
+    - name: Install Vim
+      apt: pkg=vim state=installed update_cache=true
+    - name: Install Make
+      apt: pkg=make state=installed update_cache=true
+    - name: Install Curl
+      apt: pkg=curl state=installed update_cache=true
+    - name: Install Erlang
+      apt: pkg=erlang state=installed update_cache=true
+    - name: Install Tmux
+      apt: pkg=tmux state=installed update_cache=true
