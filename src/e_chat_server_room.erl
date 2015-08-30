@@ -35,16 +35,17 @@ handle_call(_Request, _From, State) ->
     {reply, ignored, State}.
 
 %%%% Пересылка сообщения
-handle_cast({forward_message, Text, FromSocketPid}, State = #state{user_id = UserId, room_id = RoomId, sockets = SocketPids}) ->
+handle_cast({forward_message, Text, UserId, FromSocketPid},
+            State = #state{room_id = RoomId, sockets = SocketPids}) ->
     Message = e_chat_server_message_model:create([{user_id, UserId}, {room_id, RoomId}, {text, Text}]),
     forward_message(Message, FromSocketPid, SocketPids),
     {noreply, State};
 handle_cast({add_socket, SocketPid}, State = #state{sockets = SocketPids}) ->
     UpdatedSocketPids = add_socket(SocketPid, SocketPids),
     {noreply, State#state{sockets = UpdatedSocketPids}};
-handle_cast({delete_socket, SocketPid}, State = #state{sockets = SocketPids}) ->
-    UpdatedSocketPids = delete_socket(SocketPid, SocketPids),
-    {noreply, State#state{sockets = UpdatedSocketPids}};
+% handle_cast({delete_socket, SocketPid}, State = #state{sockets = SocketPids}) ->
+%     UpdatedSocketPids = delete_socket(SocketPid, SocketPids),
+%    {noreply, State#state{sockets = UpdatedSocketPids}};
 handle_cast(_Msg, State) ->
     {noreply, State}.
 
@@ -65,11 +66,11 @@ add_socket(SocketPid, SocketPids) ->
         [] -> [SocketPid | SocketPids]
     end.
 
-delete_socket(SocketPid, SocketPids) ->
-    case [Pid || Pid <- SocketPids, SocketPid =:= Pid] of
-        [_] -> [Pid || Pid <- SocketPids, SocketPid =/= Pid];
-        [] -> SocketPids
-    end.
+% delete_socket(SocketPid, SocketPids) ->
+%     case [Pid || Pid <- SocketPids, SocketPid =:= Pid] of
+%         [_] -> [Pid || Pid <- SocketPids, SocketPid =/= Pid];
+%         [] -> SocketPids
+%     end.
 
 forward_message(Message, FromSocketPid, SocketPids) ->
     [Pid ! {send_message, Message} || Pid <- SocketPids, Pid =/= FromSocketPid].

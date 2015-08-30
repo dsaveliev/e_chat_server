@@ -34,7 +34,7 @@ find_all(Data) ->
         [Users] ->
             IdsList = [integer_to_list(User#user.id) || User <- Users],
             Ids = string:join(IdsList, ","),
-            Template = "SELECT rooms.* FROM rooms LEFT JOIN users_rooms ON (rooms.id = users_rooms.room_id) WHERE users_rooms.user_id IN (~s)",
+            Template = "SELECT DISTINCT rooms.* FROM rooms LEFT JOIN users_rooms ON (rooms.id = users_rooms.room_id) WHERE users_rooms.user_id IN (~s)",
             find_with_template(Template, [Ids]);
         _ ->
             undefined

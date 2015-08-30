@@ -41,7 +41,7 @@ find_all(Data) ->
     end.
 
 find_by_room(Room) ->
-    Template = "SELECT DISTINCT users.* FROM users LEFT JOIN users_rooms ON (users_rooms.room_id = ~w)",
+    Template = "SELECT DISTINCT users.* FROM users LEFT JOIN users_rooms ON (users_rooms.user_id = users.id) WHERE users_rooms.room_id = ~w",
     find_with_template(Template, [Room#room.id]).
 
 is_exists(Data) ->

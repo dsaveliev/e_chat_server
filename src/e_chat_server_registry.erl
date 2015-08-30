@@ -37,11 +37,11 @@ handle_cast({user_connected, RoomId, UserId, SocketPid}, State = #state{room_pid
       false ->
         {noreply, State}
     end;
-handle_cast({user_disconnected, RoomId, UserId, SocketPid, RoomPid}, State) ->
-    case is_authorized(RoomId, UserId) of
-      true -> unbind_room_with_socket(RoomPid, SocketPid)
-    end,
-    {noreply, State};
+% handle_cast({user_disconnected, RoomId, UserId, SocketPid, RoomPid}, State) ->
+%     case is_authorized(RoomId, UserId) of
+%       true -> unbind_room_with_socket(RoomPid, SocketPid)
+%     end,
+%     {noreply, State};
 %TODO: Удалять комнату из registry только если в ней больше нет сокетов и она долгое время неактивна
 % На первой итерации оставим пустые комнаты активными.
 % handle_cast({delete_room, RoomId}, State = #state{room_pids = RoomPids}) ->
@@ -91,5 +91,5 @@ bind_room_with_socket(RoomPid, SocketPid) ->
     gen_server:cast(RoomPid, {add_socket, SocketPid}),
     SocketPid ! {add_room, RoomPid}.
 
-unbind_room_with_socket(RoomPid, SocketPid) ->
-    gen_server:cast(RoomPid, {delete_socket, SocketPid}).
+% unbind_room_with_socket(RoomPid, SocketPid) ->
+%     gen_server:cast(RoomPid, {delete_socket, SocketPid}).
