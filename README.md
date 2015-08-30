@@ -131,7 +131,7 @@ WS /v1/rooms/10/chat?session_id=abb8fe30-a3e7-4eee-8afd-f3c2f046f6f0
 ```
 ##### Отправка
 ```
-{"text":"И тебе привет"}
+{"text":"И тебе привет","user_id":1,"room_id":10,"created_at":"2015-08-06T13:44:07"}
 ```
 ##### Получение
 ```
