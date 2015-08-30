@@ -5,3 +5,4 @@
 /deploy/logs/*
 .erlang.mk/*
 api.txt
+/rel/sys.config

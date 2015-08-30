@@ -30,6 +30,7 @@ websocket_init(_, Req, _Opts) ->
     Req2 = cowboy_req:compact(Req),
     {ok, Req2, #state{room = Room, user = User}}.
 
+%%%% Получение сообщения
 websocket_handle({text, Data}, Req, State = #state{room_pid = RoomPid}) ->
     Message = fetch_message(Data),
     gen_server:cast(RoomPid, {forward_message, Message, self()}),
@@ -49,6 +50,7 @@ websocket_info(post_init, Req, State = #state{room = Room, user = User}) ->
     end;
 websocket_info({add_room, RoomPid}, Req, State) ->
     {ok, Req, State#state{room_pid = RoomPid}};
+%%%% Отправка сообщения
 websocket_info({send_message, Message}, Req, State) ->
     {reply, {text, message_to_json(Message)}, Req, State};
 websocket_info(_Info, Req, State) ->
@@ -60,7 +62,7 @@ websocket_terminate(_Reason, _Req, _State = #state{room = Room, user = User, roo
 %%%% Private functions
 fetch_message(Data) ->
     %TODO: Валидация
-    [{<<"text">>, Message}] = jsx:decode(Data),
+    [{<<"text">>, Message}, _, _, _] = jsx:decode(Data),
     binary_to_list(Message).
 
 message_to_json(Message) ->

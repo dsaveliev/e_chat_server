@@ -34,6 +34,7 @@ handle_call(stop, _From, State) ->
 handle_call(_Request, _From, State) ->
     {reply, ignored, State}.
 
+%%%% Пересылка сообщения
 handle_cast({forward_message, Text, FromSocketPid}, State = #state{user_id = UserId, room_id = RoomId, sockets = SocketPids}) ->
     Message = e_chat_server_message_model:create([{user_id, UserId}, {room_id, RoomId}, {text, Text}]),
     forward_message(Message, FromSocketPid, SocketPids),
