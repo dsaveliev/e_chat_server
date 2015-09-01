@@ -28,7 +28,7 @@ is_uuid(String) ->
 
 iso8601(Date) ->
   {{Year,Month,Day},{Hours,Minutes,Seconds}} = Date,
-  Date2 = format("~B-~2..0B-~2..0BT~2..0B:~2..0B:~2..0B", [Year,Month,Day,Hours,Minutes,round(Seconds)]),
+  Date2 = format("~B-~2..0B-~2..0BT~2..0B:~2..0B:~2..0BZ", [Year,Month,Day,Hours,Minutes,round(Seconds)]),
   list_to_binary(Date2).
 
 normalize_id(Id) ->
