@@ -31,9 +31,9 @@ websocket_init(_, Req, _Opts) ->
     {ok, Req2, #state{room = Room, user = User}}.
 
 %%%% Получение сообщения
-websocket_handle({text, Data}, Req, State = #state{room_pid = RoomPid}) ->
-    Message = fetch_message(Data),
-    gen_server:cast(RoomPid, {forward_message, Message, self()}),
+websocket_handle({text, Data}, Req, State = #state{room_pid = RoomPid, user = User}) ->
+    Text = fetch_message(Data),
+    gen_server:cast(RoomPid, {forward_message, Text, User#user.id, self()}),
     {ok, Req, State};
 websocket_handle({binary, _Data}, Req, State) ->
     {ok, Req, State};
@@ -62,8 +62,9 @@ websocket_terminate(_Reason, _Req, _State = #state{room = Room, user = User, roo
 %%%% Private functions
 fetch_message(Data) ->
     %TODO: Валидация
-    [{<<"text">>, Message}, _, _, _] = jsx:decode(Data),
-    binary_to_list(Message).
+    % Порядок: created_at, room_id, text, user_id
+    [_, _, {<<"text">>, Text}, _] = lists:sort(jsx:decode(Data)),
+    binary_to_list(Text).
 
 message_to_json(Message) ->
   Data = e_chat_server_message_model:render(Message),
