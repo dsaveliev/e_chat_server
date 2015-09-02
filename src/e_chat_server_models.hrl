@@ -20,7 +20,8 @@
 
 -record(user_room, {
     user_id,
-    room_id
+    room_id,
+    created_at
 }).
 
 -record(message, {

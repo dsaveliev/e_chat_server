@@ -46,5 +46,6 @@ find_with_template(Template, Values) ->
     Request = e_chat_server_common:format(Template, Values),
     {ok, _, Records} = pgapp:equery(pgpool, Request, []),
     [#user_room{user_id = UserId,
-                room_id = RoomId}
-        || {UserId, RoomId} <- Records].
+                room_id = RoomId,
+                created_at = CreatedAt}
+        || {UserId, RoomId, CreatedAt} <- Records].
