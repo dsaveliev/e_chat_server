@@ -74,8 +74,13 @@ add_room(RoomId, RoomPids, UserId) ->
         [RoomPid] ->
             {RoomPids, RoomPid};
         [] ->
-            {ok, RoomPid} = supervisor:start_child(e_chat_server_room_sup, [RoomId, UserId]),
-            {[{room, RoomId, RoomPid} | RoomPids], RoomPid}
+            case supervisor:start_child(e_chat_server_room_sup, [RoomId, UserId]) of
+              {ok, RoomPid} ->
+                supervisor:start_child(e_chat_server_room_sup, [RoomId, UserId]),
+                {[{room, RoomId, RoomPid} | RoomPids], RoomPid};
+              {error, {already_started, RoomPid}} ->
+                {RoomPids, RoomPid}
+            end
     end.
 
 % delete_room(RoomId, RoomPids) ->
