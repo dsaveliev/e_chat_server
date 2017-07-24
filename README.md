@@ -1,8 +1,7 @@
 # e_chat_server
-#### минималистичный сервер для чатов
----
-## Описание API
-### Авторизация
+Minimalist chat server written in Erlang/OTP.
+## API description
+### Login
 ```
 POST /v1/login
 {"login":"user", "password":"password"}
@@ -19,7 +18,7 @@ HTTP 422 Unprocessable Entity
 HTTP 422 Unprocessable Entity
 {"error":{"code":"user_not_found"}}
 ```
-### Выход
+### Logout
 ```
 POST /v1/logout
 X-Session-Id: abb8fe30-a3e7-4eee-8afd-f3c2f046f6f0
@@ -31,7 +30,7 @@ HTTP 200 OK
 HTTP 401 Unauthorized
 {"error":{"code":"unauthorized"}}
 ```
-### Регистрация
+### Registration
 ```
 POST /v1/register
 {"login":"user", "password":"password"}
@@ -45,7 +44,7 @@ HTTP 422 Unprocessable Entity
 HTTP 422 Unprocessable Entity
 {"error":{"code":"user_already_exists"}}
 ```
-### Информация об аккаунте
+### Account info
 ```
 GET /v1/info
 X-Session-Id: abb8fe30-a3e7-4eee-8afd-f3c2f046f6f0
@@ -56,7 +55,7 @@ HTTP 200 OK
 HTTP 401 Unauthorized
 {"error":{"code":"unauthorized"}}
 ```
-### Поиск пользователей
+### Search users
 ```
 GET /v1/users/?q=Вася
 X-Session-Id: abb8fe30-a3e7-4eee-8afd-f3c2f046f6f0
@@ -69,7 +68,7 @@ HTTP 200 OK
 HTTP 401 Unauthorized
 {"error":{"code":"unauthorized"}}
 ```
-### Список доступных комнат
+### Search available rooms
 ```
 GET /v1/rooms
 X-Session-Id: abb8fe30-a3e7-4eee-8afd-f3c2f046f6f0
@@ -82,7 +81,7 @@ HTTP 200 OK
 HTTP 401 Unauthorized
 {"error":{"code":"unauthorized"}}
 ```
-### Создание комнаты
+### Create room
 ```
 POST /v1/rooms
 X-Session-Id: abb8fe30-a3e7-4eee-8afd-f3c2f046f6f0
@@ -97,7 +96,7 @@ HTTP 422 Unprocessable Entity
 HTTP 401 Unauthorized
 {"error":{"code":"unauthorized"}}
 ```
-### Информация о комнате
+### Room info
 ```
 GET /v1/rooms/10
 X-Session-Id: abb8fe30-a3e7-4eee-8afd-f3c2f046f6f0
@@ -111,7 +110,7 @@ HTTP 422 Unprocessable Entity
 HTTP 401 Unauthorized
 {"error":{"code":"unauthorized"}}
 ```
-### История сообщений
+### Room history
 ```
 GET /v1/rooms/10/messages
 X-Session-Id: abb8fe30-a3e7-4eee-8afd-f3c2f046f6f0
@@ -125,15 +124,15 @@ HTTP 200 OK
 HTTP 401 Unauthorized
 {"error":{"code":"unauthorized"}}
 ```
-### Работа с веб сокетом
+### WebSocket connection
 ```
 WS /v1/rooms/10/chat?session_id=abb8fe30-a3e7-4eee-8afd-f3c2f046f6f0
 ```
-##### Отправка
+##### Sending a message
 ```
 {"text":"И тебе привет","user_id":1,"room_id":10,"created_at":"2015-08-06T13:44:07"}
 ```
-##### Получение
+##### Receiving a message
 ```
 {"text":"И тебе привет","user_id":1,"room_id":10,"created_at":"2015-08-06T13:44:07"}
 ```
